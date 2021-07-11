@@ -15,3 +15,67 @@
  
  ## Code Example
  */
+import UIKit
+
+// MARK: - Address
+public struct Address {
+    public var street: String
+    public var city: String
+    public var state: String
+    public var zipCode: String
+}
+
+
+// MARK: - AddressView
+public final class AddressView: UIView {
+    @IBOutlet public var streetTextField: UITextField!
+    @IBOutlet public var cityTextField: UITextField!
+    @IBOutlet public var stateTextField: UITextField!
+    @IBOutlet public var zipCodeTextField: UITextField!
+}
+
+
+// MARK: - AddressViewController
+public final class AddressViewController: UIViewController {
+    
+    // MARK: - Properties
+    // if an address is set AFTER viewDidLoad is called, the viewController must update the addressView
+    // This is an example of how a model can tell the viewController that something has changed and the views need to be updated
+    public var address: Address? {
+        didSet {
+            updateViewFromAddress()
+        }
+    }
+    public var addressView: AddressView! {
+        guard isViewLoaded else { return nil }
+        return (view as! AddressView)
+    }
+    
+    // MARK: - View Lifecycle
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+    }
+    
+    private func updateViewFromAddress() {
+        guard let addressView = addressView, let address = address else { return }
+        addressView.streetTextField.text = address.street
+        addressView.cityTextField.text = address.city
+        addressView.stateTextField.text = address.state
+        addressView.zipCodeTextField.text = address.zipCode
+    }
+    
+    // Allow user to update the address from the view
+    // MARK: - Actions
+    @IBAction public func updateAddressFromView(_ sender: AnyObject) {
+        guard let street = addressView.streetTextField.text, street.count > 0,
+              let city = addressView.cityTextField.text, city.count > 0,
+              let state = addressView.stateTextField.text, state.count > 0,
+              let zipCode = addressView.zipCodeTextField.text, zipCode.count > 0 else {
+            // TO-DO: Show an error message, handle the error, etc
+            return
+        }
+        address = Address(street: street, city: city, state: state, zipCode: zipCode)
+    }
+    
+}
+
